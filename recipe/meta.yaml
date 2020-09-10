@@ -9,9 +9,12 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/crossenv-{{ version }}.tar.gz
   sha256: 9848ca97951a7554955be564cd8a2848450932eeb522fff201b72c26d035df77
+  patches:
+    - 0001-Make-host_sysconfigdata_file-a-parameter.patch
+    - 0002-Fix-sys.platform-in-cross-python.patch
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

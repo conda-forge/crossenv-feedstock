@@ -1,7 +1,7 @@
 From e5df8e770439d0953e784a9357b6eabb1d63eaba Mon Sep 17 00:00:00 2001
 From: Isuru Fernando <isuruf@gmail.com>
 Date: Wed, 16 Sep 2020 22:46:38 +0000
-Subject: [PATCH 1/4] Support setting uname().release on macosx host
+Subject: [PATCH 1/6] Support setting uname().release on macosx host
 
 This is used by ctypes/__init_.py
 ---
@@ -66,7 +66,7 @@ index 1f26ad8..fc5ef79 100644
 From a704aa53aa1ffd15ddf46af32879f5c184381d70 Mon Sep 17 00:00:00 2001
 From: Isuru Fernando <isuruf@gmail.com>
 Date: Thu, 17 Sep 2020 02:31:01 +0000
-Subject: [PATCH 2/4] Error handling
+Subject: [PATCH 2/6] Error handling
 
 ---
  crossenv/__init__.py | 8 ++++++++
@@ -99,7 +99,7 @@ index fc5ef79..23669f0 100644
 From fd5e417f2c1dfdf36dcf8589247c35cd048663df Mon Sep 17 00:00:00 2001
 From: Isuru Fernando <isuruf@gmail.com>
 Date: Thu, 17 Sep 2020 15:20:24 +0000
-Subject: [PATCH 3/4] Fix checking major, minor
+Subject: [PATCH 3/6] Fix checking major, minor
 
 ---
  crossenv/__init__.py | 8 ++++----
@@ -128,7 +128,7 @@ index 23669f0..a4ba766 100644
 From 3490052b7243573dcfd0959e2c67d89e938db5ac Mon Sep 17 00:00:00 2001
 From: Isuru Fernando <isuruf@gmail.com>
 Date: Thu, 17 Sep 2020 16:22:43 +0000
-Subject: [PATCH 4/4] Set mac_ver
+Subject: [PATCH 4/6] Set mac_ver
 
 ---
  crossenv/__init__.py          | 2 +-
@@ -168,3 +168,65 @@ index e82a5ca..f993fe5 100644
  # importlib.reload would probably work, but just to be safe we'll try to 
  # have the modules' __dict__ completely clean.
  del sys.modules['site']
+
+From b68f29dd0902907037fb8ca3448800951e46cb83 Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Thu, 17 Sep 2020 11:38:30 -0500
+Subject: [PATCH 5/6] Use uname_result
+
+---
+ crossenv/scripts/site.py.tmpl | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/crossenv/scripts/site.py.tmpl b/crossenv/scripts/site.py.tmpl
+index f993fe5..fc4feca 100644
+--- a/crossenv/scripts/site.py.tmpl
++++ b/crossenv/scripts/site.py.tmpl
+@@ -162,9 +162,9 @@ platform.libc_ver = libc_ver
+ @wraps(platform.mac_ver)
+ def mac_ver(release='', versioninfo=('', '', ''), machine=''):
+     if release == '':
+-        release = uname_result2.release
++        release = uname_result.release
+     if machine == '':
+-        machine = uname_result2.machine
++        machine = uname_result.machine
+     return release, versioninfo, machine
+ platform.mac_ver = mac_ver
+ 
+
+From 95a89fdced44eddeed229548bf9521ac19be5776 Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Thu, 17 Sep 2020 16:45:42 +0000
+Subject: [PATCH 6/6] Use deployment_target instead of kernel version
+
+---
+ crossenv/__init__.py          | 1 +
+ crossenv/scripts/site.py.tmpl | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/crossenv/__init__.py b/crossenv/__init__.py
+index f7b6afd..0b94473 100644
+--- a/crossenv/__init__.py
++++ b/crossenv/__init__.py
+@@ -595,6 +595,7 @@ def make_cross_python(self, context):
+             if not os.path.exists(exe):
+                 utils.symlink(context.python_exe, exe)
+ 
++        macosx_deployment_target = self.macosx_deployment_target
+         # Install patches to environment
+         utils.install_script('site.py.tmpl',
+                 os.path.join(context.lib_path, 'site.py'),
+diff --git a/crossenv/scripts/site.py.tmpl b/crossenv/scripts/site.py.tmpl
+index fc4feca..47f7e5e 100644
+--- a/crossenv/scripts/site.py.tmpl
++++ b/crossenv/scripts/site.py.tmpl
+@@ -162,7 +162,7 @@ platform.libc_ver = libc_ver
+ @wraps(platform.mac_ver)
+ def mac_ver(release='', versioninfo=('', '', ''), machine=''):
+     if release == '':
+-        release = uname_result.release
++        release = %(macosx_deployment_target)r
+     if machine == '':
+         machine = uname_result.machine
+     return release, versioninfo, machine

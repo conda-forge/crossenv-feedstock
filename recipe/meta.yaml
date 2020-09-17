@@ -11,9 +11,10 @@ source:
   sha256: 9848ca97951a7554955be564cd8a2848450932eeb522fff201b72c26d035df77
   patches:
     - 0001-Make-host_sysconfigdata_file-a-parameter.patch
+    - gh34.patch
 
 build:
-  number: 2
+  number: 3
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

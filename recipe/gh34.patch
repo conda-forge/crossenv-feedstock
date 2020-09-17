@@ -1,0 +1,170 @@
+From e5df8e770439d0953e784a9357b6eabb1d63eaba Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Wed, 16 Sep 2020 22:46:38 +0000
+Subject: [PATCH 1/4] Support setting uname().release on macosx host
+
+This is used by ctypes/__init_.py
+---
+ crossenv/__init__.py | 33 +++++++++++++++++++++++++--------
+ 1 file changed, 25 insertions(+), 8 deletions(-)
+
+diff --git a/crossenv/__init__.py b/crossenv/__init__.py
+index 1f26ad8..fc5ef79 100644
+--- a/crossenv/__init__.py
++++ b/crossenv/__init__.py
+@@ -295,13 +295,22 @@ def find_host_python(self, host):
+ 
+         self.host_platform = sys.platform # Default: not actually cross compiling
+         with open(self.host_makefile, 'r') as fp:
+-            for line in fp:
+-                line = line.strip()
+-                if line.startswith('_PYTHON_HOST_PLATFORM='):
+-                    host_platform = line.split('=',1)[-1]
+-                    if host_platform:
+-                        self.host_platform = line.split('=',1)[-1]
+-                    break
++            lines = list(fp.readlines())
++
++        for line in lines:
++            line = line.strip()
++            if line.startswith('_PYTHON_HOST_PLATFORM='):
++                host_platform = line.split('=',1)[-1]
++                if host_platform:
++                    self.host_platform = line.split('=',1)[-1]
++                break
++
++        self.macosx_deployment_target = None
++        for line in lines:
++            line = line.strip()
++            if line.startswith('MACOSX_DEPLOYMENT_TARGET='):
++                self.macosx_deployment_target = line.split('=',1)[-1]
++                break
+ 
+         # Sanity checks
+         if self.host_version != build_version:
+@@ -397,10 +406,18 @@ def create_configuration(self, context):
+             sysname = host_info[0]
+             machine = host_info[-1]
+ 
++        release = ''
++        if self.macosx_deployment_target:
++            major, minor = self.macosx_deployment_target.split(".")
++            if major == "10":
++                release = "%s.0.0" % (int(minor) + 4)
++            elif major == "11":
++                release = "%s.0.0" % (int(minor) + 20)
++
+         config['uname'] = {
+             'sysname' : sysname.title(),
+             'nodename' : 'build',
+-            'release' : '',
++            'release' : release,
+             'version' : '',
+             'machine' : machine,
+         }
+
+From a704aa53aa1ffd15ddf46af32879f5c184381d70 Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Thu, 17 Sep 2020 02:31:01 +0000
+Subject: [PATCH 2/4] Error handling
+
+---
+ crossenv/__init__.py | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/crossenv/__init__.py b/crossenv/__init__.py
+index fc5ef79..23669f0 100644
+--- a/crossenv/__init__.py
++++ b/crossenv/__init__.py
+@@ -409,10 +409,18 @@ def create_configuration(self, context):
+         release = ''
+         if self.macosx_deployment_target:
+             major, minor = self.macosx_deployment_target.split(".")
++            try:
++                major, minor = int(major), int(minor)
++            except ValueError:
++                raise ValueError("Unexpected value %s for MACOSX_DEPLOYMENT_TARGET" %
++                        self.macosx_deployment_target)
+             if major == "10":
+                 release = "%s.0.0" % (int(minor) + 4)
+             elif major == "11":
+                 release = "%s.0.0" % (int(minor) + 20)
++            else:
++                raise ValueError("Unexpected major version %s for MACOSX_DEPLOYMENT_TARGET" %
++                        major)
+ 
+         config['uname'] = {
+             'sysname' : sysname.title(),
+
+From fd5e417f2c1dfdf36dcf8589247c35cd048663df Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Thu, 17 Sep 2020 15:20:24 +0000
+Subject: [PATCH 3/4] Fix checking major, minor
+
+---
+ crossenv/__init__.py | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/crossenv/__init__.py b/crossenv/__init__.py
+index 23669f0..a4ba766 100644
+--- a/crossenv/__init__.py
++++ b/crossenv/__init__.py
+@@ -414,10 +414,10 @@ def create_configuration(self, context):
+             except ValueError:
+                 raise ValueError("Unexpected value %s for MACOSX_DEPLOYMENT_TARGET" %
+                         self.macosx_deployment_target)
+-            if major == "10":
+-                release = "%s.0.0" % (int(minor) + 4)
+-            elif major == "11":
+-                release = "%s.0.0" % (int(minor) + 20)
++            if major == 10:
++                release = "%s.0.0" % (minor + 4)
++            elif major == 11:
++                release = "%s.0.0" % (minor + 20)
+             else:
+                 raise ValueError("Unexpected major version %s for MACOSX_DEPLOYMENT_TARGET" %
+                         major)
+
+From 3490052b7243573dcfd0959e2c67d89e938db5ac Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Thu, 17 Sep 2020 16:22:43 +0000
+Subject: [PATCH 4/4] Set mac_ver
+
+---
+ crossenv/__init__.py          | 2 +-
+ crossenv/scripts/site.py.tmpl | 9 +++++++++
+ 2 files changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/crossenv/__init__.py b/crossenv/__init__.py
+index a4ba766..f7b6afd 100644
+--- a/crossenv/__init__.py
++++ b/crossenv/__init__.py
+@@ -305,7 +305,7 @@ def find_host_python(self, host):
+                     self.host_platform = line.split('=',1)[-1]
+                 break
+ 
+-        self.macosx_deployment_target = None
++        self.macosx_deployment_target = ''
+         for line in lines:
+             line = line.strip()
+             if line.startswith('MACOSX_DEPLOYMENT_TARGET='):
+diff --git a/crossenv/scripts/site.py.tmpl b/crossenv/scripts/site.py.tmpl
+index e82a5ca..f993fe5 100644
+--- a/crossenv/scripts/site.py.tmpl
++++ b/crossenv/scripts/site.py.tmpl
+@@ -159,6 +159,15 @@ def libc_ver(*args, **kwargs):
+     return ('', '')
+ platform.libc_ver = libc_ver
+ 
++@wraps(platform.mac_ver)
++def mac_ver(release='', versioninfo=('', '', ''), machine=''):
++    if release == '':
++        release = uname_result2.release
++    if machine == '':
++        machine = uname_result2.machine
++    return release, versioninfo, machine
++platform.mac_ver = mac_ver
++
+ # importlib.reload would probably work, but just to be safe we'll try to 
+ # have the modules' __dict__ completely clean.
+ del sys.modules['site']

@@ -13,9 +13,10 @@ source:
     - 0001-Make-host_sysconfigdata_file-a-parameter.patch
     - gh34.patch
     - gh37.patch
+    - gh37-2.patch
 
 build:
-  number: 5
+  number: 6
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

@@ -1,5 +1,5 @@
 {% set name = "crossenv" %}
-{% set version = "0.7" %}
+{% set version = "1.0" %}
 
 
 package:
@@ -8,15 +8,10 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/crossenv-{{ version }}.tar.gz
-  sha256: 9848ca97951a7554955be564cd8a2848450932eeb522fff201b72c26d035df77
-  patches:
-    - 0001-Make-host_sysconfigdata_file-a-parameter.patch
-    - gh34.patch
-    - gh37.patch
-    - gh37-2.patch
+  sha256: ed6800af1d7b30dd0e594566febc6f135cb5be378f7c5698c64228bcccc7d6c6
 
 build:
-  number: 6
+  number: 0
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

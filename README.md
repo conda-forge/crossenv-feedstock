@@ -5,11 +5,9 @@ Home: https://github.com/benfogle/crossenv
 
 Package license: MIT
 
-Feedstock license: BSD-3-Clause
+Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/crossenv-feedstock/blob/master/LICENSE.txt)
 
 Summary: A cross-compiling tool for Python extension modules
-
-
 
 Current build status
 ====================

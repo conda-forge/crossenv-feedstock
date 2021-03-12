@@ -1,0 +1,24 @@
+From bd4606848da1d47b59d6706b44e0c21db9ecffde Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Thu, 11 Mar 2021 19:20:01 -0600
+Subject: [PATCH] Fix machine for ppc64le
+
+---
+ crossenv/__init__.py | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/crossenv/__init__.py b/crossenv/__init__.py
+index 5b79a49..00a2a3f 100644
+--- a/crossenv/__init__.py
++++ b/crossenv/__init__.py
+@@ -459,6 +459,10 @@ def create_configuration(self, context):
+         elif len(host_info) == 1:
+             sysname = host_info[0]
+             machine = platform.machine()
++        elif host_info[-1] == "powerpc64le":
++            # On uname.machine=ppc64le, _PYTHON_HOST_PLATFORM is linux-powerpc64le
++            sysname = host_info[0]
++            machine = "ppc64le"
+         else:
+             sysname = host_info[0]
+             machine = host_info[-1]

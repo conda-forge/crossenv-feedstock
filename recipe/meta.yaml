@@ -9,9 +9,11 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/crossenv-{{ version }}.tar.gz
   sha256: ed6800af1d7b30dd0e594566febc6f135cb5be378f7c5698c64228bcccc7d6c6
+  patches:
+    - gh56.patch
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

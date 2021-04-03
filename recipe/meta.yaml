@@ -1,5 +1,5 @@
 {% set name = "crossenv" %}
-{% set version = "1.1.0" %}
+{% set version = "1.1.2" %}
 
 
 package:
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/crossenv-{{ version }}.tar.gz
-  sha256: c355265e36335dd49a102d5466d942f8c6c10e728ad2eaa7163c90f61e0ca985
+  sha256: e15e47a004f2725089601afb58141a48b6b4fa907c041d54ec884d829f4309ea
 
 build:
   number: 0

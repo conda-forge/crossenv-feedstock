@@ -1,5 +1,5 @@
 {% set name = "crossenv" %}
-{% set version = "1.0" %}
+{% set version = "1.1.2" %}
 
 
 package:
@@ -8,13 +8,13 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/crossenv-{{ version }}.tar.gz
-  sha256: ed6800af1d7b30dd0e594566febc6f135cb5be378f7c5698c64228bcccc7d6c6
+  sha256: e15e47a004f2725089601afb58141a48b6b4fa907c041d54ec884d829f4309ea
   patches:
     - gh56.patch
     - fix-very-long-paths.patch
 
 build:
-  number: 2
+  number: 0
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

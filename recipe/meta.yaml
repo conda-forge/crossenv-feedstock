@@ -11,9 +11,10 @@ source:
   sha256: ed6800af1d7b30dd0e594566febc6f135cb5be378f7c5698c64228bcccc7d6c6
   patches:
     - gh56.patch
+    - fix-very-long-paths.patch
 
 build:
-  number: 1
+  number: 2
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

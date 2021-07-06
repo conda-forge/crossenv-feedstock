@@ -1,0 +1,52 @@
+From 2a1e1b888f3608dbd577f483bacb13f52a086a9e Mon Sep 17 00:00:00 2001
+From: Benjamin Fogle <benfogle@gmail.com>
+Date: Fri, 26 Feb 2021 17:10:51 -0500
+Subject: [PATCH] Enable crossenv to work in very long paths.
+
+Closes #46
+---
+ crossenv/utils.py         | 26 ++++++++++++++++++++++++++
+ tests/test_environment.py | 11 +++++++++++
+ 2 files changed, 37 insertions(+)
+
+diff --git a/crossenv/utils.py b/crossenv/utils.py
+index f5d69fa..441e1a7 100644
+--- a/crossenv/utils.py
++++ b/crossenv/utils.py
+@@ -70,10 +70,36 @@ def make_launcher(src, dst):
+             exec %(src)s "$@"
+             ''', locals())))
+ 
++def fixup_shebang(src):
++    """Alter the shebang line if it's too long, as can happen somethings with
++    e.g., Jenkins. This trick is taken from what pip does."""
++    if not src.startswith('#!'):
++        return src
++
++    # full line, including newline
++    try:
++        end = src.index('\n') + 1
++    except ValueError:
++        end = len(src)
++    shebang = src[:end]
++
++    if len(shebang.encode('utf-8')) <= 127:
++        return src
++
++    interp = shebang[2:].strip()
++    preamble = dedent(F("""\
++        #!/bin/sh
++        '''exec' %(interp)s $0 "$@"
++        '''
++        """, locals()))
++    return preamble + src[end:]
++
++
+ def install_script(name, dst, values, perms=0o755):
+     srcname = os.path.join('scripts', name)
+     src = pkgutil.get_data(__package__, srcname)
+     src = F(src.decode(), values)
++    src = fixup_shebang(src)
+     mkdir_if_needed(os.path.dirname(dst))
+ 
+     with overwrite_file(dst, perms=perms) as fp:

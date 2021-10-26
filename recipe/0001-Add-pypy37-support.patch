@@ -11,15 +11,6 @@ diff --git a/crossenv/__init__.py b/crossenv/__init__.py
 index 7da701e..fd34c9c 100644
 --- a/crossenv/__init__.py
 +++ b/crossenv/__init__.py
-@@ -225,7 +225,7 @@ class CrossEnvBuilder(venv.EnvBuilder):
-         :param host:    Path to the host Python executable.
-         """
- 
--        build_version = sysconfig.get_config_var('VERSION')
-+        build_version = sysconfig.get_config_var('VERSION') or "3.7"
-         host = os.path.abspath(host)
-         if not os.path.exists(host):
-             raise FileNotFoundError("%s does not exist" % host)
 @@ -309,30 +309,29 @@ class CrossEnvBuilder(venv.EnvBuilder):
              if self.host_relativize:
                  self.host_ar[0] = os.path.basename(self.host_ar[0])
@@ -30,7 +21,7 @@ index 7da701e..fd34c9c 100644
 -        if not os.path.exists(self.host_makefile):
 -            raise FileNotFoundError("Cannot find Makefile")
 -
-+        self.host_version = self.host_sysconfigdata.build_time_vars.get('VERSION', 3.7)
++        self.host_version = self.host_sysconfigdata.build_time_vars['VERSION']
 +        self.macosx_deployment_target = ''
          self.host_platform = sys.platform # Default: not actually cross compiling
 -        with open(self.host_makefile, 'r') as fp:
@@ -72,15 +63,6 @@ index 7da701e..fd34c9c 100644
  
          # Sanity checks
          if self.host_version != build_version:
-@@ -368,7 +367,7 @@ class CrossEnvBuilder(venv.EnvBuilder):
-         # Sanity check that this is the right compiler. (See #24, #27.)
-         found_triple = run_compiler('-dumpmachine').strip().strip()
-         if found_triple:
--            expected = self.host_sysconfigdata.build_time_vars['HOST_GNU_TYPE']
-+            expected = self.host_sysconfigdata.build_time_vars.get('HOST_GNU_TYPE', "aarch64-conda_cos7-linux-gnu")
-             if not self._compare_triples(found_triple, expected):
-                 logger.warning("The cross-compiler (%r) does not appear to be "
-                                "for the correct architecture (got %s, expected "
 -- 
 2.33.0
 

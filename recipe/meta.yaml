@@ -13,10 +13,9 @@ source:
     - gh56.patch
     - fix-very-long-paths.patch
     - 0001-Add-pypy37-support.patch
-    - 0003-Ignore-some-values-in-host_sysconfigdata.patch
 
 build:
-  number: 3
+  number: 4
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

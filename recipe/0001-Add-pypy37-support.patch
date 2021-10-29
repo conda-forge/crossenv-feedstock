@@ -21,9 +21,10 @@ index 7da701e..fd34c9c 100644
 -        if not os.path.exists(self.host_makefile):
 -            raise FileNotFoundError("Cannot find Makefile")
 -
+-        self.host_platform = sys.platform # Default: not actually cross compiling
 +        self.host_version = self.host_sysconfigdata.build_time_vars['VERSION']
 +        self.macosx_deployment_target = ''
-         self.host_platform = sys.platform # Default: not actually cross compiling
++        self.host_platform = None # Default: not actually cross compiling
 -        with open(self.host_makefile, 'r') as fp:
 -            lines = list(fp.readlines())
  

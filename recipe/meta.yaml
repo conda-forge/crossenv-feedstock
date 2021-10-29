@@ -15,7 +15,7 @@ source:
     - 0001-Add-pypy37-support.patch
 
 build:
-  number: 4
+  number: 5
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

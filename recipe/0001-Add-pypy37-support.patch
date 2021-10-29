@@ -11,7 +11,7 @@ diff --git a/crossenv/__init__.py b/crossenv/__init__.py
 index 7da701e..fd34c9c 100644
 --- a/crossenv/__init__.py
 +++ b/crossenv/__init__.py
-@@ -309,30 +309,41 @@ class CrossEnvBuilder(venv.EnvBuilder):
+@@ -309,30 +309,42 @@ class CrossEnvBuilder(venv.EnvBuilder):
              if self.host_relativize:
                  self.host_ar[0] = os.path.basename(self.host_ar[0])
  
@@ -61,6 +61,7 @@ index 7da701e..fd34c9c 100644
 +                    self.macosx_deployment_target = line.split('=',1)[-1]
 +                    break
 +
++       self.host_gnu_type = self.host_sysconfigdata.build_time_vars['HOST_GNU_TYPE']
 +       if self.host_platform is None:
 +           # It was probably natively compiled, but not necessarily for this
 +           # architecture. Guess from HOST_GNU_TYPE.

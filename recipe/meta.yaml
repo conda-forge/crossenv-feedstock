@@ -10,8 +10,6 @@ source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/crossenv-{{ version }}.tar.gz
   sha256: 642c16105a79edb70840e04cf49fcdf241813e8953310e1d2d92e739dece3958
   patches:
-    - gh56.patch
-    - fix-very-long-paths.patch
     - 0001-Add-pypy37-support.patch
 
 build:

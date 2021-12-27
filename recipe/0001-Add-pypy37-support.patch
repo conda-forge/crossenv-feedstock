@@ -1,82 +1,45 @@
-From a94731525388d76f8de6258a1c91f67a7e7417c6 Mon Sep 17 00:00:00 2001
+From e6b1c288b2568f6c0e87deac07be07729bd853c2 Mon Sep 17 00:00:00 2001
 From: Chris Burr <christopher.burr@cern.ch>
-Date: Thu, 7 Oct 2021 08:33:27 +0200
-Subject: [PATCH 1/3] Add pypy37 support
+Date: Sun, 31 Oct 2021 14:44:45 -0500
+Subject: [PATCH] support pypy which doesn't have a makefile
 
 ---
- crossenv/__init__.py | 47 ++++++++++++++++++++++----------------------
- 1 file changed, 23 insertions(+), 24 deletions(-)
+ crossenv/__init__.py | 24 +++++++++++-------------
+ 1 file changed, 11 insertions(+), 13 deletions(-)
 
 diff --git a/crossenv/__init__.py b/crossenv/__init__.py
-index 7da701e..fd34c9c 100644
+index d84cb27..f52aaf1 100644
 --- a/crossenv/__init__.py
 +++ b/crossenv/__init__.py
-@@ -309,30 +309,42 @@ class CrossEnvBuilder(venv.EnvBuilder):
-             if self.host_relativize:
-                 self.host_ar[0] = os.path.basename(self.host_ar[0])
+@@ -322,20 +322,18 @@ def find_host_python(self, host):
+         self.host_version = self.host_sysconfigdata.build_time_vars['VERSION']
+         self.host_gnu_type = self.host_sysconfigdata.build_time_vars['HOST_GNU_TYPE']
  
--        self.host_version = self.host_sysconfigdata.build_time_vars['VERSION']
--
 -        # Ask the makefile a few questions too
 -        if not os.path.exists(self.host_makefile):
 -            raise FileNotFoundError("Cannot find Makefile")
 -
--        self.host_platform = sys.platform # Default: not actually cross compiling
-+        self.host_version = self.host_sysconfigdata.build_time_vars['VERSION']
-+        self.macosx_deployment_target = ''
-+        self.host_platform = None # Default: not actually cross compiling
+         self.host_platform = None
 -        with open(self.host_makefile, 'r') as fp:
 -            lines = list(fp.readlines())
- 
 -        for line in lines:
 -            line = line.strip()
 -            if line.startswith('_PYTHON_HOST_PLATFORM='):
--                host_platform = line.split('=',1)[-1]
+-                host_platform = line.split('=',1)[-1].strip()
 -                if host_platform:
--                    self.host_platform = line.split('=',1)[-1]
--                break
--
--        self.macosx_deployment_target = ''
--        for line in lines:
--            line = line.strip()
--            if line.startswith('MACOSX_DEPLOYMENT_TARGET='):
--                self.macosx_deployment_target = line.split('=',1)[-1]
+-                    self.host_platform = host_platform
 -                break
 +        # Ask the makefile a few questions too
-+        # It's expected to not exist for PyPy
 +        if os.path.exists(self.host_makefile):
 +            with open(self.host_makefile, 'r') as fp:
 +                lines = list(fp.readlines())
-+
 +            for line in lines:
 +                line = line.strip()
 +                if line.startswith('_PYTHON_HOST_PLATFORM='):
-+                    host_platform = line.split('=',1)[-1]
++                    host_platform = line.split('=',1)[-1].strip()
 +                    if host_platform:
-+                        self.host_platform = line.split('=',1)[-1]
++                        self.host_platform = host_platform
 +                    break
-+
-+            for line in lines:
-+                line = line.strip()
-+                if line.startswith('MACOSX_DEPLOYMENT_TARGET='):
-+                    self.macosx_deployment_target = line.split('=',1)[-1]
-+                    break
-+
-+        self.host_gnu_type = self.host_sysconfigdata.build_time_vars['HOST_GNU_TYPE']
-+        if self.host_platform is None:
-+            # It was probably natively compiled, but not necessarily for this
-+            # architecture. Guess from HOST_GNU_TYPE.
-+            host = self.host_gnu_type.split('-')
-+            if len(host) == 4: # i.e., aarch64-unknown-linux-gnu
-+                self.host_platform = '-'.join([host[2], host[0]])
-+            elif len(host) == 3: # i.e., aarch64-linux-gnu, unlikely.
-+                self.host_platform = '-'.join([host[1], host[0]])
-+            else:
-+                logger.warning("Cannot determine platform. Using build.")
-+                self.host_platform = sysconfig.get_platform()
  
-         # Sanity checks
-         if self.host_version != build_version:
--- 
-2.33.0
-
+         if self.host_platform is None:
+             # It was probably natively compiled, but not necessarily for this

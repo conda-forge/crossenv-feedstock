@@ -10,9 +10,10 @@ source:
   sha256: 642c16105a79edb70840e04cf49fcdf241813e8953310e1d2d92e739dece3958
   patches:
     - 0001-Add-pypy37-support.patch
+    - 0002-Fix-py38-support.patch
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

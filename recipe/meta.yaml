@@ -11,9 +11,10 @@ source:
   patches:
     - 0001-Add-pypy37-support.patch
     - 0002-Fix-py38-support.patch
+    - 0003-Provide-empty-lines-if-there-is-no-Makefile.patch
 
 build:
-  number: 1
+  number: 2
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

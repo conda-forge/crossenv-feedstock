@@ -9,9 +9,7 @@ source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/crossenv-{{ version }}.tar.gz
   sha256: 5bdadc9459c748abb1dc010865a39f00be95a2bfcdb3bc6cd823bf5c2c27fe40
   patches:
-    - 0001-Add-pypy37-support.patch
     - 0002-Fix-py38-support.patch
-    - 0003-Provide-empty-lines-if-there-is-no-Makefile.patch
 
 build:
   number: 0

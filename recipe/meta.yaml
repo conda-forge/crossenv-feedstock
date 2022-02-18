@@ -9,10 +9,13 @@ source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/crossenv-{{ version }}.tar.gz
   sha256: 5bdadc9459c748abb1dc010865a39f00be95a2bfcdb3bc6cd823bf5c2c27fe40
   patches:
-    - 0002-Fix-py38-support.patch
+    - patches/0002-Fix-py38-support.patch
+    - patches/gh86.patch
+    - patches/gh91.patch
+    - patches/gh92.patch
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

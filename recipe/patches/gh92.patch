@@ -1,0 +1,39 @@
+From a65940dd6cf0c6d8a9c11b924d6de2e26b80e699 Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <idf2@illinois.edu>
+Date: Fri, 18 Feb 2022 11:10:57 -0600
+Subject: [PATCH] Fix sysconfig.get_platform()
+
+---
+ crossenv/__init__.py                     | 6 ++++++
+ crossenv/scripts/sysconfig-patch.py.tmpl | 2 +-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/crossenv/__init__.py b/crossenv/__init__.py
+index fbdd027..789e0e1 100644
+--- a/crossenv/__init__.py
++++ b/crossenv/__init__.py
+@@ -512,6 +512,12 @@ def get_uname_info(self):
+                 raise ValueError("Unexpected major version %s for MACOSX_DEPLOYMENT_TARGET" %
+                         major)
+ 
++        if self.host_sysname == "darwin":
++            self.sysconfig_platform == "macosx-%s-%s".format(self.macosx_deployment_target,
++                self.host_machine)
++        else:
++            self.sysconfig_platform = self.host_platform
++
+     def expand_manylinux_tags(self):
+         """
+         Convert legacy manylinux tags to PEP600, because pip only looks for one
+diff --git a/crossenv/scripts/sysconfig-patch.py.tmpl b/crossenv/scripts/sysconfig-patch.py.tmpl
+index d64be1d..00c4a7a 100644
+--- a/crossenv/scripts/sysconfig-patch.py.tmpl
++++ b/crossenv/scripts/sysconfig-patch.py.tmpl
+@@ -15,6 +15,6 @@ def _get_sysconfigdata_name():
+     return {{repr(sysconfig_name)}}
+ 
+ def get_platform():
+-    return {{repr(self.host_platform)}}
++    return {{repr(self.sysconfig_platform)}}
+ 
+ assert _CONFIG_VARS is None, "sysconfig was set up prior to patching?"

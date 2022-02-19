@@ -15,7 +15,7 @@ source:
     - patches/gh92.patch
 
 build:
-  number: 3
+  number: 4
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

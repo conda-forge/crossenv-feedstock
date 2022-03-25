@@ -1,0 +1,47 @@
+From e93da022f98fbeca766bd08d219bacf82187d2a3 Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Fri, 25 Mar 2022 11:37:20 -0500
+Subject: [PATCH] Support setuptools>=61
+
+---
+ .../scripts/distutils-sysconfig-patch.py.tmpl | 27 +++++++++++--------
+ 1 file changed, 16 insertions(+), 11 deletions(-)
+
+diff --git a/crossenv/scripts/distutils-sysconfig-patch.py.tmpl b/crossenv/scripts/distutils-sysconfig-patch.py.tmpl
+index 694c34d..205802d 100644
+--- a/crossenv/scripts/distutils-sysconfig-patch.py.tmpl
++++ b/crossenv/scripts/distutils-sysconfig-patch.py.tmpl
+@@ -10,17 +10,22 @@ if get_config_vars.__module__ == __name__:
+     def get_makefile_filename():
+         return {{repr(self.host_makefile)}}
+ 
+-    __real_init_posix = _init_posix
+-    def _init_posix():
+-        old = os.environ.get('_PYTHON_SYSCONFIGDATA_NAME')
+-        os.environ['_PYTHON_SYSCONFIGDATA_NAME'] = {{repr(sysconfig_name)}}
+-        try:
+-            return __real_init_posix()
+-        finally:
+-            if old is None:
+-                del os.environ['_PYTHON_SYSCONFIGDATA_NAME']
+-            else:
+-                os.environ['_PYTHON_SYSCONFIGDATA_NAME'] = old
++    try:
++        __real_init_posix = _init_posix
++        def _init_posix():
++            old = os.environ.get('_PYTHON_SYSCONFIGDATA_NAME')
++            os.environ['_PYTHON_SYSCONFIGDATA_NAME'] = {{repr(sysconfig_name)}}
++            try:
++                return __real_init_posix()
++            finally:
++                if old is None:
++                    del os.environ['_PYTHON_SYSCONFIGDATA_NAME']
++                else:
++                    os.environ['_PYTHON_SYSCONFIGDATA_NAME'] = old
++    except NameError:
++        # setuptools >=61, removed _init_posix and fixes distutils.sysconfig
++        # to use sysconfig which we patch in sysconfig-patch.py
++        pass
+ 
+     assert _config_vars is None, "distutils.sysconfig was set up prior to patching?"
+ 

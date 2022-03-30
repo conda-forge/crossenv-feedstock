@@ -1,0 +1,21 @@
+From 6ac097fd281b0e647f01e8912b22a2171c2c0631 Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Wed, 30 Mar 2022 13:11:17 -0700
+Subject: [PATCH] Support pypy3.8+ where _config_vars={}
+
+---
+ crossenv/scripts/distutils-sysconfig-patch.py.tmpl | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/crossenv/scripts/distutils-sysconfig-patch.py.tmpl b/crossenv/scripts/distutils-sysconfig-patch.py.tmpl
+index 694c34d..971a156 100644
+--- a/crossenv/scripts/distutils-sysconfig-patch.py.tmpl
++++ b/crossenv/scripts/distutils-sysconfig-patch.py.tmpl
+@@ -22,6 +22,6 @@ if get_config_vars.__module__ == __name__:
+             else:
+                 os.environ['_PYTHON_SYSCONFIGDATA_NAME'] = old
+ 
+-    assert _config_vars is None, "distutils.sysconfig was set up prior to patching?"
++    assert not _config_vars, "distutils.sysconfig was set up prior to patching?"
+ 
+ #vi: ft=python

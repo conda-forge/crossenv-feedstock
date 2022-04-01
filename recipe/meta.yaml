@@ -15,9 +15,10 @@ source:
     - patches/gh92.patch
     - patches/gh94.patch
     - patches/gh95.patch
+    - patches/gh96.patch
 
 build:
-  number: 6
+  number: 7
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

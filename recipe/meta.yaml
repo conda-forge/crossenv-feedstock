@@ -16,9 +16,10 @@ source:
     - patches/gh94.patch
     - patches/gh95.patch
     - patches/gh96.patch
+    - patches/0001-Fix-Python-3.11-by-removing-use-of-sysconfig._is_pyt.patch
 
 build:
-  number: 7
+  number: 8
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

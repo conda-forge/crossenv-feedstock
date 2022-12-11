@@ -1,5 +1,5 @@
 {% set name = "crossenv" %}
-{% set version = "1.2.0" %}
+{% set version = "1.4.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/crossenv-{{ version }}.tar.gz
-  sha256: 5bdadc9459c748abb1dc010865a39f00be95a2bfcdb3bc6cd823bf5c2c27fe40
+  sha256: 0631d4f93d58c63d53d4fa8a016de63a28312cc0afdd1c663ed61f6cc026c0ec
   patches:
     - patches/0002-Fix-py38-support.patch
     - patches/gh86.patch
@@ -19,7 +19,7 @@ source:
     - patches/0001-Fix-Python-3.11-by-removing-use-of-sysconfig._is_pyt.patch
 
 build:
-  number: 8
+  number: 0
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

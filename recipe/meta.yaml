@@ -10,13 +10,6 @@ source:
   sha256: 0631d4f93d58c63d53d4fa8a016de63a28312cc0afdd1c663ed61f6cc026c0ec
   patches:
     - patches/0002-Fix-py38-support.patch
-    # - patches/gh86.patch
-    # - patches/gh91.patch
-    # - patches/gh92.patch
-    # - patches/gh94.patch
-    # - patches/gh95.patch
-    # - patches/gh96.patch
-    # - patches/0001-Fix-Python-3.11-by-removing-use-of-sysconfig._is_pyt.patch
 
 build:
   number: 0

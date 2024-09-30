@@ -10,9 +10,10 @@ source:
   sha256: 0631d4f93d58c63d53d4fa8a016de63a28312cc0afdd1c663ed61f6cc026c0ec
   patches:
     - patches/0002-Fix-py38-support.patch
+    - patches/gh119.patch
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 

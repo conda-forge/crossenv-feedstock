@@ -10,7 +10,6 @@ source:
   sha256: 5d9c5fe581f793f32659718115f8c93054fe1fea6e541b6e2c845e038a1b3d39
   patches:
     - patches/0002-Fix-py38-support.patch
-    - patches/gh119.patch
 
 build:
   number: 0

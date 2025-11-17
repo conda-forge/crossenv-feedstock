@@ -25,6 +25,7 @@ requirements:
     - hatchling
   run:
     - python >=${{ python_min }}
+    - wheel
 
 tests:
   - python:
@@ -34,7 +35,6 @@ tests:
       run:
         - pip
         - python ${{ python_min }}.*
-        - wheel
     script:
       - pip check
 

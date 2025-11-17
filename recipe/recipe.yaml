@@ -14,7 +14,7 @@ source:
   patches:
     # - patches/0002-Fix-py38-support.patch # drop that one atm
     # - patches/gh121.patch
-    - patches/gh130.patch
+    # - patches/gh130.patch
 
 build:
   number: 3

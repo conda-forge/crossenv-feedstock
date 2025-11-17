@@ -13,7 +13,7 @@ source:
   sha256: 5b7e2f231d9a3c6ea56ce3b7fd7acbe0f1e310e44a8f699909910f1334db1a31
   patches:
     # - patches/0002-Fix-py38-support.patch # drop that one atm
-    - patches/gh121.patch
+    # - patches/gh121.patch
     - patches/gh130.patch
 
 build:

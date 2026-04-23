@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: crossenv
-  version: 1.5.0
+  version: "1.6.0"
 
 package:
   name: ${{ name|lower }}
@@ -10,14 +10,14 @@ package:
 
 source:
   url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/crossenv-${{ version }}.tar.gz
-  sha256: 5d9c5fe581f793f32659718115f8c93054fe1fea6e541b6e2c845e038a1b3d39
+  sha256: 5f6a523a2cc8b516f8604c5675eaf853fb590bd6883284007d3e7ec7e7936c73
   patches:
     - patches/0002-Fix-py38-support.patch
     - patches/gh121.patch
     - patches/gh130.patch
 
 build:
-  number: 3
+  number: 0
   noarch: python
   script: ${{ PYTHON }} -m pip install . -vv
 

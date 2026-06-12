@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: crossenv
-  version: 1.5.0
+  version: 1.6.1
 
 package:
   name: ${{ name|lower }}
@@ -10,14 +10,10 @@ package:
 
 source:
   url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/crossenv-${{ version }}.tar.gz
-  sha256: 5d9c5fe581f793f32659718115f8c93054fe1fea6e541b6e2c845e038a1b3d39
-  patches:
-    - patches/0002-Fix-py38-support.patch
-    - patches/gh121.patch
-    - patches/gh130.patch
+  sha256: 5b7e2f231d9a3c6ea56ce3b7fd7acbe0f1e310e44a8f699909910f1334db1a31
 
 build:
-  number: 3
+  number: 0
   noarch: python
   script: ${{ PYTHON }} -m pip install . -vv
 
@@ -26,8 +22,10 @@ requirements:
     - pip
     - python ${{ python_min }}.*
     - setuptools
+    - hatchling
   run:
     - python >=${{ python_min }}
+    - wheel
 
 tests:
   - python:

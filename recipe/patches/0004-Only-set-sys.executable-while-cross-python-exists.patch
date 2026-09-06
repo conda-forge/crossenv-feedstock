@@ -1,0 +1,37 @@
+Only point sys.executable at cross-python while that wrapper exists.
+
+crossenv 1.6.0 added an unconditional
+
+    executable = <venv>/cross/bin/python
+
+to sys-patch.py.tmpl so that subprocesses launched with sys.executable get
+cross-python. conda-forge's cross-python copies that wrapper to
+<venv>/bin/cross-python, installs a shim at $PREFIX/bin/python and then removes
+<venv>/cross, so on every cross build sys.executable named a path that had just
+been deleted:
+
+    ERROR: Error [Errno 2] No such file or directory:
+      '.../_build_env/venv/cross/bin/python' while executing command
+      Preparing metadata (pyproject.toml)
+
+Guarding on the wrapper still being present keeps upstream's behaviour where it
+applies and restores the 1.5.0 behaviour otherwise -- sys.executable then stays
+the shim that conda-forge put on argv[0], which is itself cross-python.
+
+Not yet reported upstream; the guard is written so it can be sent there as-is.
+--- a/crossenv/scripts/sys-patch.py.tmpl
++++ b/crossenv/scripts/sys-patch.py.tmpl
+@@ -15,4 +15,12 @@
+ 
+ # If a process started by cross-python tries to start a subprocess with sys.executable,
+ # make sure that it points at cross-python.
+-executable = {{repr(context.cross_env_exe)}}
++#
++# Only do this while that wrapper is still on disk. An environment is allowed to
++# relocate it and leave its own entry point in place; overwriting sys.executable
++# with a path that no longer exists breaks every subprocess launch instead.
++_cross_env_exe = {{repr(context.cross_env_exe)}}
++import os as _os
++if _os.path.exists(_cross_env_exe):
++    executable = _cross_env_exe
++del _os, _cross_env_exe

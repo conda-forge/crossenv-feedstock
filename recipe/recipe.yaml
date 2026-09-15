@@ -13,9 +13,10 @@ source:
   sha256: 5b7e2f231d9a3c6ea56ce3b7fd7acbe0f1e310e44a8f699909910f1334db1a31
   patches:
     - patches/0004-Only-set-sys.executable-while-cross-python-exists.patch
+    - patches/0005-Accept-any-Apple-OS-name-in-the-triple-split.patch
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script: ${{ PYTHON }} -m pip install . -vv
 

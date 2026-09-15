@@ -1,0 +1,28 @@
+Accept any Apple OS name when splitting a compiler triple's OS/version.
+
+_split_apple_os_version whitelists only "ios", "tvos" and "watchos", so any
+other Apple OS raises ("darwin", "macos")
+
+--- a/crossenv/__init__.py
++++ b/crossenv/__init__.py
+@@ -464,15 +464,11 @@
+                 )
+
+     def _split_apple_os_version(self, value):
+-        # Split the Apple OS version from the OS name prefix.
+-        if value.startswith("ios"):
+-            offset = 3
+-        elif value.startswith("tvos"):
+-            offset = 4
+-        elif value.startswith("watchos"):
+-            offset = 7
+-        else:
+-            raise ValueError("Unknown Apple compiler triple.")
++        # Split the Apple OS version from the OS name prefix (e.g., "ios13.0" ->
++        # ("ios", "13.0")). The version is always the first run of digits, so this
++        # works for any Apple OS name -- ios, tvos, watchos, macos, darwin, etc. --
++        # without needing to whitelist each one.
++        offset = next((i for i, c in enumerate(value) if c.isdigit()), len(value))
+         return value[:offset], value[offset:]
+
+     def _clean_triple(self, triple):
